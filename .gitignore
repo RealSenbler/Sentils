@@ -1,0 +1,21 @@
+# Build output
+/.gradle/
+/build/
+
+# The game's own folder when run from the project: worlds, logs, settings, screenshots
+/run/
+/logs/
+
+# IDE files
+/.idea/
+*.iml
+/out/
+/.vscode/
+
+# The fortune script's build tools: what npm installs and the library it is built from
+/tools/fortune/node_modules/
+/tools/fortune/.library/
+
+# Operating system leftovers
+.DS_Store
+Thumbs.db

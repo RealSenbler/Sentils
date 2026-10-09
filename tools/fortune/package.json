@@ -1,0 +1,12 @@
+{
+  "name": "sentils-fortune-bundle",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.10",
+    "typescript": "5.8.3"
+  }
+}

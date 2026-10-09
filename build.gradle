@@ -1,0 +1,93 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+// Single source set: the "main" source set reads from src/client instead of
+// src/main, so src/main is not needed. Delete this block if you would rather
+// move your files into src/main/java and src/main/resources.
+sourceSets {
+    main {
+        java.srcDirs = ['src/client/java']
+        resources.srcDirs = ['src/client/resources']
+    }
+}
+
+repositories {
+    // Add repositories to retrieve artifacts from in here.
+    // Loom adds the essential maven repositories automatically.
+    // Elementa and UniversalCraft, the UI library the menus are built with.
+    maven { url = "https://repo.essential.gg/repository/maven-public" }
+}
+
+dependencies {
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // The JavaScript engine that runs the farming fortune script; "include" packs it into the mod's jar.
+    implementation "org.mozilla:rhino:${project.rhino_version}"
+    include "org.mozilla:rhino:${project.rhino_version}"
+
+    // The UI library the menus are built with, and what it draws through. Both are packed into the
+    // mod's jar. They are written in Kotlin, which Fabric Language Kotlin supplies when the game runs.
+    implementation "gg.essential:elementa:${project.elementa_version}"
+    include "gg.essential:elementa:${project.elementa_version}"
+    implementation "gg.essential:universalcraft-${project.minecraft_version}-fabric:${project.universalcraft_version}"
+    include "gg.essential:universalcraft-${project.minecraft_version}-fabric:${project.universalcraft_version}"
+    implementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
+
+    // Tests for the parts that do not need the game running (the Efficiency Lab's records and maths).
+    testImplementation platform("org.junit:junit-bom:5.11.4")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "loader_version", project.loader_version
+    filteringCharset "UTF-8"
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version,
+                "minecraft_version": project.minecraft_version,
+                "loader_version": project.loader_version
+    }
+}
+
+def targetJavaVersion = 25
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        it.options.release.set(targetJavaVersion)
+    }
+}
+
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+    withSourcesJar()
+}
+
+jar {
+    // The mod's own licence and the notices for the libraries packed inside it.
+    from(["LICENSE.txt", "THIRD-PARTY-NOTICES.txt"]) {
+        into "META-INF"
+        rename { "${project.archives_base_name}-${it}" }
+    }
+}

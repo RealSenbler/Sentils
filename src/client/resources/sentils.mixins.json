@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.senbler.sentils.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "client.AbstractContainerScreenAccessor",
+    "client.BossHealthOverlayAccessor",
+    "client.ClientPacketListenerMixin",
+    "client.HudMixin",
+    "client.MinecraftMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

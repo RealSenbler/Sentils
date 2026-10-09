@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "sentils",
+  "version": "${version}",
+
+  "name": "Sentils",
+  "description": "Client-side helper features for Hypixel SkyBlock: chat title alerts, waypoints from chat coordinates, command keybinds, Safari and mining helpers, and the Efficiency Lab for timing and comparing what you earn. Open the settings with /sentils.",
+  "authors": [
+    "Senbler"
+  ],
+  "contact": {
+    "homepage": "https://github.com/RealSenbler/Sentils",
+    "sources": "https://github.com/RealSenbler/Sentils",
+    "issues": "https://github.com/RealSenbler/Sentils/issues"
+  },
+  "icon": "assets/sentilsLogo.png",
+
+  "license": "All-Rights-Reserved",
+
+  "environment": "client",
+
+  "entrypoints": {
+    "client": [
+      "net.senbler.sentils.client.SentilsClient"
+    ]
+  },
+
+  "mixins": [
+    "sentils.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": ">=26.2-",
+    "java": ">=25",
+    "fabric-api": "*",
+    "fabric-language-kotlin": "*"
+  }
+}

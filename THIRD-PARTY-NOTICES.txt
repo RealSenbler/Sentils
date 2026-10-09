@@ -1,0 +1,26 @@
+Sentils includes the following software made by others. Each is included unchanged, as its own
+jar inside the Sentils jar (under META-INF/jars), and can be replaced with another build of the
+same library by replacing that jar.
+
+Elementa
+  Copyright (c) Spark Universe and contributors
+  GNU Lesser General Public License, version 3.0
+  Source and licence text: https://github.com/EssentialGG/Elementa
+
+UniversalCraft
+  Copyright (c) Spark Universe and contributors
+  GNU Lesser General Public License, version 3.0
+  Source and licence text: https://github.com/EssentialGG/UniversalCraft
+
+Rhino
+  Copyright (c) Mozilla and contributors
+  Mozilla Public License, version 2.0
+  Source and licence text: https://github.com/mozilla/rhino
+
+The farming fortune calculations (assets/sentils/fortune/fortune.js) are built from the
+farming-weight library by Elite Network Development LLC, under the MIT License. Its licence is
+included beside it as FARMING-WEIGHT-LICENSE.txt.
+
+The full texts of the GNU Lesser General Public License and the GNU General Public License it
+adds to are at https://www.gnu.org/licenses/lgpl-3.0.txt and https://www.gnu.org/licenses/gpl-3.0.txt.
+The full text of the Mozilla Public License is at https://www.mozilla.org/MPL/2.0/.
