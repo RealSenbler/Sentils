@@ -98,6 +98,9 @@ public class SettingsScreen extends WindowScreen {
     private static final int LOGO_SIZE = 22;
     private static final float FADE_SECONDS = 0.12f;
 
+    private static final String DISCORD_URL = "https://discord.gg/RQa9BfgyNA";
+    private static final String GITHUB_URL = "https://github.com/RealSenbler/Sentils";
+
     /**
      * The sidebar entries, in display order. To add one, add it here and in buildCategory.
      * <p>
@@ -107,6 +110,7 @@ public class SettingsScreen extends WindowScreen {
      * of their own.
      */
     private enum Category {
+        ABOUT("About"),
         NOTIFICATIONS("Notifications"),
         WAYPOINTS("Waypoints"),
         KEYBINDS("Keybinds"),
@@ -472,6 +476,7 @@ public class SettingsScreen extends WindowScreen {
     private void buildCategory(Category category) {
         this.building = category;
         switch (category) {
+            case ABOUT -> buildAbout();
             case NOTIFICATIONS -> buildNotifications();
             case WAYPOINTS -> buildWaypoints();
             case KEYBINDS -> buildKeybinds();
@@ -489,6 +494,16 @@ public class SettingsScreen extends WindowScreen {
             case THEME -> buildTheme();
             case DEBUG -> buildDebug();
         }
+    }
+
+    private void buildAbout() {
+        beginSection("LINKS");
+
+        addButtonRow("Discord", "Join the Sentils Discord server for help, news and suggestions. Opens in your browser",
+                null, "Join", () -> Util.getPlatform().openUri(DISCORD_URL));
+
+        addButtonRow("Source code", "See how the mod works, or report a problem, on GitHub. Opens in your browser",
+                null, "Open", () -> Util.getPlatform().openUri(GITHUB_URL));
     }
 
     private void buildNotifications() {
