@@ -27,12 +27,14 @@ import net.senbler.sentils.client.lab.core.DungeonTracker;
 import net.senbler.sentils.client.lab.core.FarmingTracker;
 import net.senbler.sentils.client.lab.core.FishingTracker;
 import net.senbler.sentils.client.lab.core.ForagingTracker;
+import net.senbler.sentils.client.lab.core.HuntingTracker;
 import net.senbler.sentils.client.lab.core.MiningTracker;
 import net.senbler.sentils.client.lab.core.SessionRecorder;
 import net.senbler.sentils.client.lab.core.SecretTracker;
 import net.senbler.sentils.client.lab.core.SlayerTracker;
 import net.senbler.sentils.client.lab.model.Activity;
 import net.senbler.sentils.client.lab.model.Counters;
+import net.senbler.sentils.client.lab.model.Session;
 import net.senbler.sentils.client.skyblock.ItemPickups;
 import net.senbler.sentils.client.skyblock.ServerChat;
 import net.senbler.sentils.client.skyblock.ServerSounds;
@@ -60,6 +62,7 @@ public final class LabActivityCollectors {
     private static final ForagingTracker foraging = new ForagingTracker();
     private static final FarmingTracker farming = new FarmingTracker();
     private static final MiningTracker mining = new MiningTracker();
+    private static final HuntingTracker hunting = new HuntingTracker();
     private static final DungeonTracker dungeons = new DungeonTracker();
     private static final SecretTracker secrets = new SecretTracker();
     private static final float BAT_VOLUME = 0.1f;
@@ -95,6 +98,12 @@ public final class LabActivityCollectors {
             recorder.count(count.key(), count.amount());
             // Catacombs XP only ever shows at the end of a run, never above the hotbar with the skills'.
             if (count.key().equals(Counters.DUNGEONS_CATACOMBS_XP)) recorder.addXp("Catacombs", count.amount(), true);
+            // A shard is an item gained like any other, but for where it goes: put down so that it is valued.
+            if (count.key().startsWith(Counters.HUNTING_SHARD)) {
+                String shard = count.key().substring(Counters.HUNTING_SHARD.length());
+                recorder.record(Session.Source.HUNTING_BOX, Session.Kind.GAIN, shard + " Shard",
+                        HuntingTracker.itemId(shard), Math.round(count.amount()));
+            }
         }
     }
 
@@ -119,6 +128,7 @@ public final class LabActivityCollectors {
         record(foraging.chat(text, hoverTexts, now));
         record(farming.chat(text, hoverTexts));
         record(mining.chat(text));
+        record(hunting.chat(text));
         record(dungeons.chat(text));
     }
 

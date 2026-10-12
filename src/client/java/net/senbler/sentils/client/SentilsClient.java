@@ -1,12 +1,10 @@
 package net.senbler.sentils.client;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
-import net.fabricmc.fabric.api.client.screen.v1.Screens;
-import net.minecraft.client.gui.screens.TitleScreen;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -25,7 +23,6 @@ import net.senbler.sentils.client.hud.HudManager;
 import net.senbler.sentils.client.keybinds.KeybindConfigScreen;
 import net.senbler.sentils.client.keybinds.KeybindHandler;
 import net.senbler.sentils.client.keybinds.KeybindsConfig;
-import net.senbler.sentils.client.gui.widget.FlatButton;
 import net.senbler.sentils.client.lab.Lab;
 import net.senbler.sentils.client.lab.LabCommands;
 import net.senbler.sentils.client.lab.LabHud;
@@ -65,6 +62,10 @@ public class SentilsClient implements ClientModInitializer {
     // Whether what needs that key (the farming fortune checker) can be reached: its settings and its
     // command. Off until players have a way of giving a key of their own.
     public static final boolean apiKeyFeatures = false;
+    // Whether the tools for working on the mod can be reached: the Debug settings and the /lab debug and
+    // /lab lines commands. On when the game is run from the project, or started with -Dsentils.debug=true.
+    public static final boolean debugFeatures =
+            FabricLoader.getInstance().isDevelopmentEnvironment() || Boolean.getBoolean("sentils.debug");
 
     private static final Pattern COORDS = Pattern.compile(
             "x:?\\s*(-?\\d+(?:\\.\\d+)?)[,\\s]+y:?\\s*(-?\\d+(?:\\.\\d+)?)[,\\s]+z:?\\s*(-?\\d+(?:\\.\\d+)?)",
@@ -145,14 +146,6 @@ public class SentilsClient implements ClientModInitializer {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(LabCommands.build("lab"));
             dispatcher.register(ClientCommands.literal("sentils").then(LabCommands.build("lab")));
-        });
-
-        // The main menu has no way to run /sentils, so the settings get a button there.
-        ScreenEvents.AFTER_INIT.register((mc, screen, width, height) -> {
-            if (!(screen instanceof TitleScreen)) return;
-            Screens.getWidgets(screen).add(new FlatButton(4, 4, 52, 16, Component.literal("Sentils"),
-                    FlatButton.Style.SECONDARY,
-                    () -> mc.gui.setScreen(new SettingsScreen(screen, Component.literal("Sentils")))));
         });
 
         ClientReceiveMessageEvents.GAME.register((message, overlay) -> {

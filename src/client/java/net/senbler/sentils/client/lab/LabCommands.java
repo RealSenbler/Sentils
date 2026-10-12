@@ -16,6 +16,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.SharedSuggestionProvider;
 
 import net.senbler.sentils.client.Log;
+import net.senbler.sentils.client.SentilsClient;
 import net.senbler.sentils.client.lab.analysis.Metric;
 import net.senbler.sentils.client.lab.analysis.SessionReport;
 import net.senbler.sentils.client.lab.model.Activity;
@@ -33,7 +34,14 @@ public final class LabCommands {
 
     /** The whole command tree, under the given name. */
     public static LiteralArgumentBuilder<FabricClientCommandSource> build(String name) {
-        return ClientCommands.literal(name)
+        LiteralArgumentBuilder<FabricClientCommandSource> root = ClientCommands.literal(name);
+        if (SentilsClient.debugFeatures) {
+            // What the XP readers have seen, for working out why XP is or is not being recorded.
+            root.then(ClientCommands.literal("debug").executes(context -> report("debug", LabCollectors.debugLines())));
+            // The last chat lines from the server and the scoreboard, for finding out how a line reads.
+            root.then(ClientCommands.literal("lines").executes(context -> report("lines", LabActivityCollectors.lines())));
+        }
+        return root
                 .executes(context -> openScreen(() -> new LabScreen(null)))
                 .then(ClientCommands.literal("start")
                         .executes(context -> say(start(LabSettings.lastActivity, "")))
@@ -47,10 +55,6 @@ public final class LabCommands {
                 .then(ClientCommands.literal("stop").executes(context -> stop()))
                 .then(ClientCommands.literal("cancel").executes(context -> say(Lab.cancel())))
                 .then(ClientCommands.literal("status").executes(context -> say(status())))
-                // What the XP readers have seen, for working out why XP is or is not being recorded.
-                .then(ClientCommands.literal("debug").executes(context -> report("debug", LabCollectors.debugLines())))
-                // The last chat lines from the server and the scoreboard, for finding out how a line reads.
-                .then(ClientCommands.literal("lines").executes(context -> report("lines", LabActivityCollectors.lines())))
                 .then(ClientCommands.literal("split")
                         .executes(context -> say(Lab.split("")))
                         .then(ClientCommands.argument("label", StringArgumentType.greedyString())

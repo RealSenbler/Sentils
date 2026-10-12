@@ -575,7 +575,7 @@ public class LabScreen extends LabPanelScreen {
                 new Object[] {Icons.of(Metric.PURSE_PER_HOUR), "COINS", "Purse",
                         "How the purse on the scoreboard changes"},
                 new Object[] {Icons.of(Metric.XP_PER_HOUR), "XP", "Skills",
-                        "Skill XP, from the line above the hotbar. If it shows none, /lab debug says why"});
+                        "Skill XP, from the line above the hotbar or the tab list"});
 
         LabTable table = addTable(y + StatTile.HEIGHT + 6, this.contentBottom, 2f, 1.5f, 3f, 1.5f, 1.6f);
         table.alignRight(3, 4);

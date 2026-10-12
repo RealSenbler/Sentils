@@ -34,7 +34,6 @@ import gg.essential.elementa.constraints.animation.Animations;
 import gg.essential.universal.UKeyboard;
 import gg.essential.universal.USound;
 import kotlin.Unit;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -144,10 +143,10 @@ public class SettingsScreen extends WindowScreen {
 
         /**
          * Whether the entry is left out of the sidebar and the search. Farming has only the fortune
-         * checker; Debug is for working on the mod, and shows only when the game is run from the project.
+         * checker; Debug is for working on the mod, and shows only where SentilsClient.debugFeatures is on.
          */
         boolean hidden() {
-            if (this == DEBUG) return !FabricLoader.getInstance().isDevelopmentEnvironment();
+            if (this == DEBUG) return !SentilsClient.debugFeatures;
             return this == FARMING && !SentilsClient.apiKeyFeatures;
         }
 

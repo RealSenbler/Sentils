@@ -43,6 +43,7 @@ public final class ActivityStats {
             case FARMING -> Counters.FARMING_BLOCKS;
             case DUNGEONS -> Counters.DUNGEONS_RUNS;
             case MINING -> Counters.MINING_POWDER;
+            case HUNTING -> Counters.HUNTING_SHARDS;
             default -> null;
         };
     }
@@ -56,6 +57,7 @@ public final class ActivityStats {
             case FARMING -> "Blocks/h";
             case DUNGEONS -> "Runs/h";
             case MINING -> "Powder/h";
+            case HUNTING -> "Shards/h";
             default -> Metric.ACTIVITY_PER_HOUR.shortLabel;
         };
     }
@@ -98,6 +100,9 @@ public final class ActivityStats {
         if (activity == Activity.FARMING || any(session, "farming.")) groups.add(farming(session, trackedMillis));
         if (activity == Activity.DUNGEONS || any(session, "dungeons.")) groups.add(dungeons(session));
         if (activity == Activity.MINING || any(session, "mining.")) groups.add(mining(session));
+        if (activity == Activity.HUNTING || any(session, "hunting.")) {
+            groups.add(activity == Activity.HUNTING ? 0 : groups.size(), hunting(session));
+        }
         if (activity == Activity.FISHING || any(session, "fishing.")) groups.add(fishing(session));
         if (activity == Activity.SLAYER || any(session, "slayer.")) {
             groups.add(activity == Activity.SLAYER ? 0 : groups.size(), slayer(session));
@@ -128,6 +133,20 @@ public final class ActivityStats {
         optional(rows, "Garden XP", count(session, Counters.FARMING_GARDEN_XP), Unit.COUNT);
         optional(rows, "Sowdust", count(session, Counters.FARMING_SOWDUST), Unit.COUNT);
         return new Group("FARMING", rows);
+    }
+
+    private static Group hunting(Session session) {
+        List<Row> rows = new ArrayList<>();
+        double shards = count(session, Counters.HUNTING_SHARDS);
+        double catches = count(session, Counters.HUNTING_CATCHES);
+        rows.add(new Row("Shards gained", shards, Unit.COUNT, false));
+        parts(session, Counters.HUNTING_SHARD, rows);
+        optional(rows, "Catches", catches, Unit.COUNT);
+        parts(session, Counters.HUNTING_SOURCE, rows);
+        if (catches > 0) rows.add(new Row("Shards per catch", shards / catches, Unit.PLAIN, false));
+        optional(rows, "Fusions", count(session, Counters.HUNTING_FUSIONS), Unit.COUNT);
+        parts(session, Counters.HUNTING_FUSED, rows);
+        return new Group("HUNTING", rows);
     }
 
     private static Group mining(Session session) {

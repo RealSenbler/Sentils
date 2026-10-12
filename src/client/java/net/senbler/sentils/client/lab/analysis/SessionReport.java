@@ -188,7 +188,7 @@ public final class SessionReport {
     /** XP in the activity's skill, or in every skill together if the activity has none. */
     public Measure skillXp() {
         if (this.session.xp.isEmpty()) {
-            return Measure.unavailable("No skill XP was seen above the hotbar or in the tab list. Try /lab debug");
+            return Measure.unavailable("No skill XP was seen above the hotbar or in the tab list");
         }
         String skill = activity().skill;
         double amount = 0;

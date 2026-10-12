@@ -78,7 +78,8 @@ public class Session {
         public long amount; // always positive; the kind says which way it went
     }
 
-    public enum Source { SACK, INVENTORY, MANUAL }
+    /** HUNTING_BOX is shards, which chat tells of and which never pass through the inventory or the sacks. */
+    public enum Source { SACK, INVENTORY, MANUAL, HUNTING_BOX }
 
     public enum Kind {
         /** Came to the player while the session was running. */

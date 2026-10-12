@@ -12,7 +12,7 @@ Put all three jars in your `mods` folder. Sentils will not start without the oth
 
 ## Using it
 
-Open the settings with `/sentils`, or with the Sentils button on the main menu.
+Open the settings with `/sentils`.
 
 | Command | What it opens |
 |---|---|

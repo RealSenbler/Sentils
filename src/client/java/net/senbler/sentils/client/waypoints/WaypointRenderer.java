@@ -24,7 +24,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.StagedVertexBuffer;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.state.level.CameraEntityRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
@@ -187,8 +190,9 @@ public final class WaypointRenderer {
         if (wp != null) addWaypoint(pose, builder, wp);
         if (aim != null) addWaypoint(pose, builder, aim);
 
-        if (wp != null && WaypointSettings.renderTracer) addTracerTo(pose, builder, cam, wp);
-        if (aim != null && targetTracer) addTracerTo(pose, builder, cam, aim);
+        CameraRenderState camera = context.levelState().cameraRenderState;
+        if (wp != null && WaypointSettings.renderTracer) addTracerTo(pose, builder, camera, wp);
+        if (aim != null && targetTracer) addTracerTo(pose, builder, camera, aim);
 
         poseStack.popPose();
 
@@ -202,14 +206,35 @@ public final class WaypointRenderer {
         stagedBuffer.endFrame();
     }
 
-    /** A tracer from just in front of the camera to the middle of the waypoint's block. */
-    private static void addTracerTo(Matrix4fc pose, VertexConsumer builder, Vec3 cam, Waypoint wp) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null) return;
-        Vec3 look = mc.player.getLookAngle();
-        Vec3 start = cam.add(look.scale(1.0)); // a block in front of the camera
+    /** A tracer from the crosshair, a block in front of the camera, to the middle of the waypoint's block. */
+    private static void addTracerTo(Matrix4fc pose, VertexConsumer builder, CameraRenderState camera, Waypoint wp) {
+        Vec3 cam = camera.pos;
+        Vector3f ahead = underCrosshair(camera);
+        Vec3 start = cam.add(ahead.x, ahead.y, ahead.z);
         Vec3 end = new Vec3(wp.x() + 0.5, wp.y() + 0.5, wp.z() + 0.5);
         addTracer(pose, builder, cam, start, end, TRACER_HALF_WIDTH, wp.r(), wp.g(), wp.b(), 0.8f);
+    }
+
+    /**
+     * Where, from the camera, the spot a block ahead under the crosshair is. With view bobbing on,
+     * the game sways everything in the world as the player walks, but not the crosshair, so the
+     * spot straight ahead of the camera drifts off it. This undoes the sway, which is worked out
+     * as GameRenderer.bobView does, so that the spot stays under the crosshair.
+     */
+    private static Vector3f underCrosshair(CameraRenderState camera) {
+        Vector3f ahead = new Vector3f(0, 0, -1);
+        CameraEntityRenderState entity = camera.entityRenderState;
+        if (Minecraft.getInstance().options.bobView().get() && entity != null && entity.isPlayer) {
+            float walk = entity.backwardsInterpolatedWalkDistance * Mth.PI;
+            float bob = entity.bob;
+            Matrix4f sway = new Matrix4f()
+                    .translate(Mth.sin(walk) * bob * 0.5f, -Math.abs(Mth.cos(walk) * bob), 0)
+                    .rotateZ(Mth.sin(walk) * bob * 3 * Mth.DEG_TO_RAD)
+                    .rotateX(Math.abs(Mth.cos(walk - 0.2f) * bob) * 5 * Mth.DEG_TO_RAD);
+            sway.invert().transformPosition(ahead);
+        }
+        // From the camera's own way of facing to the world's.
+        return camera.orientation.transform(ahead);
     }
 
     /** The box, and the beacon if the waypoint has one. */

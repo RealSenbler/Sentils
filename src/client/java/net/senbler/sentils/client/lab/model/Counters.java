@@ -72,6 +72,15 @@ public final class Counters {
     public static final String MINING_NUCLEUS_RUNS = "mining.nucleus_runs";
     public static final String MINING_MINESHAFTS = "mining.mineshafts";
 
+    /** Shards gained in any way, and of each kind. Fusions are apart: they make shards out of others. */
+    public static final String HUNTING_SHARDS = "hunting.shards";
+    public static final String HUNTING_SHARD = "hunting.shard.";
+    /** Times shards were gained, and how: caught, charmed, shared, fished up. */
+    public static final String HUNTING_CATCHES = "hunting.catches";
+    public static final String HUNTING_SOURCE = "hunting.source.";
+    public static final String HUNTING_FUSIONS = "hunting.fusions";
+    public static final String HUNTING_FUSED = "hunting.fused.";
+
     /** Trees cut down that gave a gift, and each kind of tree. */
     public static final String FORAGING_TREES = "foraging.trees";
     public static final String FORAGING_TREE = "foraging.tree.";

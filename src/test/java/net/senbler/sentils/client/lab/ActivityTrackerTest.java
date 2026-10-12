@@ -20,6 +20,7 @@ import net.senbler.sentils.client.lab.core.DungeonTracker;
 import net.senbler.sentils.client.lab.core.FarmingTracker;
 import net.senbler.sentils.client.lab.core.FishingTracker;
 import net.senbler.sentils.client.lab.core.ForagingTracker;
+import net.senbler.sentils.client.lab.core.HuntingTracker;
 import net.senbler.sentils.client.lab.core.MiningTracker;
 import net.senbler.sentils.client.lab.core.SecretTracker;
 import net.senbler.sentils.client.lab.core.SessionRecorder;
@@ -389,6 +390,45 @@ class ActivityTrackerTest {
         assertEquals(737, totals.get(Counters.MINING_POWDER));
         assertNull(totals.get(Counters.MINING_POWDER_KIND + "Glacite"));
         assertEquals(260, totals.get(Counters.MINING_BLOCKS));
+    }
+
+    @Test
+    void shardsAreCountedHoweverTheyAreComeByAndFusionsApart() {
+        HuntingTracker hunting = new HuntingTracker();
+        Map<String, Double> totals = sum(List.of(
+                hunting.chat("You caught a Birries Shard!"),
+                hunting.chat("You caught an Invisibug Shard!"),
+                hunting.chat("You caught x2 Voracious Spider Shards!"),
+                hunting.chat("  GOOD CATCH! You caught Water Snake Shard x3!"),
+                hunting.chat("  GOOD CATCH! You caught a Water Snake Shard!"),
+                hunting.chat("LOOT SHARE You received a Glacite Walker Shard for assisting Steve!"),
+                hunting.chat("LOOT SHARE You received 2 Mossybit Shards for assisting Steve!"),
+                hunting.chat("LOOT SHARE! You received 2x Parakeet Shard from Steve catching a Parakeet!"),
+                hunting.chat("LOOT SHARE! You received a Rainbow Feather and 3x Rockmite Shard from Steve catching a SPARKLING Rockmite!"),
+                hunting.chat("CHARM! You charmed the Slug and received 1 Keeled Slug Shard!"),
+                hunting.chat("CHARM! You charmed the Haggard and received 3 Haggard Shards!"),
+                hunting.chat("CAPTURE! You caught a Solsnatcher and gained 2x Solsnatcher Shard!"),
+                hunting.chat("CAPTURE! You found Hideyho, and as a reward he gave you a Hideyho Shard!"),
+                hunting.chat("FLOOR DROP! You found Litterbug Shard on the ground!"),
+                hunting.chat("SHARD! Your contribution earned you the End Stone Protector Shard!"),
+                hunting.chat("FUSION! You obtained Bolt Shard x2! NEW!"),
+                // Not gains: a shard moved to the box, and someone quoting a line.
+                hunting.chat("You sent 6 Voracious Spider Shards to your Hunting Box."),
+                hunting.chat("Party > Steve: You caught a Birries Shard!")));
+
+        assertEquals(15, totals.get(Counters.HUNTING_CATCHES));
+        assertEquals(25, totals.get(Counters.HUNTING_SHARDS));
+        assertEquals(2, totals.get(Counters.HUNTING_SHARD + "Voracious Spider"));
+        assertEquals(4, totals.get(Counters.HUNTING_SHARD + "Water Snake"));
+        assertEquals(3, totals.get(Counters.HUNTING_SHARD + "Rockmite"));
+        assertEquals(1, totals.get(Counters.HUNTING_SHARD + "Keeled Slug"));
+        assertEquals(1, totals.get(Counters.HUNTING_SHARD + "End Stone Protector"));
+        assertEquals(3, totals.get(Counters.HUNTING_SOURCE + "Caught"));
+        assertEquals(2, totals.get(Counters.HUNTING_SOURCE + "Fished up"));
+        assertEquals(4, totals.get(Counters.HUNTING_SOURCE + "Loot share"));
+        assertEquals(1, totals.get(Counters.HUNTING_FUSIONS));
+        assertEquals(2, totals.get(Counters.HUNTING_FUSED + "Bolt"));
+        assertEquals("SHARD_VORACIOUS_SPIDER", HuntingTracker.itemId("Voracious Spider"));
     }
 
     @Test
